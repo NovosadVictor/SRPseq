@@ -1,0 +1,6 @@
+{
+  "gene": "CD44",
+  "output_dir": "test/",
+  "rbps_path": "/home/v-novosad/huge/v-novosad/Splicing/Bio.Splicing/data/new_splicing_factors_symbols.tsv",
+  "tissue_specific": true
+}

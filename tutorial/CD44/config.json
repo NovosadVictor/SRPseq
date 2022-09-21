@@ -1,0 +1,5 @@
+{
+  "gene": "CD44",
+  "output_dir": "results/",
+  "tissue_specific": true
+}

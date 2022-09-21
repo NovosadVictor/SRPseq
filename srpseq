@@ -1,0 +1,130 @@
+# !/usr/local/bin/python3
+
+# External imports
+import argparse
+import os
+import sys
+
+from src import build
+
+
+def dir(dir_name):
+    dir_name = dir_name.strip('"')
+    if not os.path.isdir(dir_name):
+        raise ValueError(f"Directory {dir_name} does not exist.")
+    return os.path.abspath(dir_name)
+
+
+def file(file_name):
+    file_name = file_name.strip('"')
+    if not os.path.isfile(file_name):
+        raise ValueError(f"File {file_name} does not exist.")
+    return os.path.abspath(file_name)
+
+
+tool_name = 'srpseq'
+
+
+class SRPseq(object):
+    def __init__(self):
+        # Create new parser of script arguments
+        parser = argparse.ArgumentParser(
+            usage=f'{tool_name} [-h] <command> [<args>]',
+            description="""
+            MegaSplicerDetectron
+
+            Available exhaufs commands are:
+              build       Build splicing factor pipeline
+              summary     Get summary of a model
+              plot     Plot model results
+            """,
+            formatter_class=argparse.RawDescriptionHelpFormatter)
+
+        # Read the first positional argument defining a command
+        parser.add_argument('command', metavar='command',
+                            type=str, choices=['build', 'summary', 'plot'],
+                            help='Subcommand to run')
+        args = parser.parse_args(sys.argv[1:2])
+
+        # Read arguments for a given command
+        getattr(self, args.command)()
+
+    def common_args(self, parser):
+        parser.add_argument('-c', '--config', metavar='path',
+                            type=file, default="./config.json",
+                            help='Configuration file; Default: %(default)s.')
+
+        # Example of bool option
+        # parser.add_argument('--opt', action='store_true', help='Option description.')
+
+    def build(self):
+        # Create new parser for build arguments
+        parser = argparse.ArgumentParser(
+            prog=f'{tool_name} build',
+            description="""
+            Build splicing factor pipeline
+            """,
+            formatter_class=argparse.RawDescriptionHelpFormatter)
+
+        # Add common options
+        self.common_args(parser)
+
+        # Parser build options
+        args = parser.parse_args(sys.argv[2:])
+
+        build.main(args.config)
+
+    # def plot(self):
+    #     # Create new parser for summary arguments
+    #     parser = argparse.ArgumentParser(
+    #         prog=f'{tool_name} plot',
+    #         description="""
+    #         Plot model results
+    #         """,
+    #         formatter_class=argparse.RawDescriptionHelpFormatter)
+    #
+    #     # Add common options
+    #     self.common_args(parser)
+    #
+    #     # Parser summary options
+    #     args = parser.parse_args(sys.argv[2:])
+    #
+    #     make_pipeline_plots.main(args.config)
+
+    # def summary(self):
+    #     # Create new parser for summary arguments
+    #     parser = argparse.ArgumentParser(
+    #         prog='exhaufs summary',
+    #         description="""
+    #         Get summary
+    #         Available summary modes are:
+    #           classifiers    Fit and evaluate classifier, generate report of its accuracy
+    #                          metrics for datasets, plot its features importances (only for
+    #                          SVM or RF classifier), and save trained model to file.
+    #           regressors     Fit and evaluate regressor, generate report of its accuracy
+    #                          metrics for datasets, plot Kaplan-Meier curves, and save trained model to file.
+    #         """,
+    #         formatter_class=argparse.RawDescriptionHelpFormatter)
+    #
+    #     # Add common options
+    #     self.common_args(parser)
+    #
+    #     # Add summary options
+    #     parser.add_argument('mode', metavar='mode',
+    #                         type=str, choices=MODES,
+    #                         help='Summary mode')
+    #
+    #     # Parser summary options
+    #     args = parser.parse_args(sys.argv[2:])
+    #
+    #     # Get summary
+    #     if args.mode == 'classifiers':
+    #         from src import make_classifier_summary
+    #         make_classifier_summary.main(args.config)
+    #     elif args.mode == 'regressors':
+    #         from src import make_regressor_summary
+    #         make_regressor_summary.main(args.config)
+
+
+if __name__ == '__main__':
+    SRPseq()
